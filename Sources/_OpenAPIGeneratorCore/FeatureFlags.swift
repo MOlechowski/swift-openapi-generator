@@ -28,6 +28,9 @@
 public enum FeatureFlag: String, Hashable, Codable, CaseIterable, Sendable {
     // needs to be here for the enum to compile
     case empty
+    
+    /// Enables template-based code generation instead of AST-based generation.
+    case templateBasedGeneration
 }
 
 /// A set of enabled feature flags.

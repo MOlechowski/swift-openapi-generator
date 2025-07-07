@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(swift build:*)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(swift test:*)",
+      "Bash(tmux:*)",
+      "Bash(swift package:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

@@ -26,6 +26,53 @@ public enum NamingStrategy: String, Sendable, Codable, Equatable, CaseIterable {
     case idiomatic
 }
 
+/// Components that can be generated using templates.
+public enum TemplateComponent: String, Sendable, Codable, Equatable, CaseIterable {
+    /// API protocol generation using templates.
+    case apiProtocol
+    /// Client implementation using templates.
+    case client
+    /// Server implementation using templates.
+    case server
+    /// Type definitions using templates.
+    case types
+    /// Error types using templates.
+    case errors
+}
+
+/// Configuration for the template system.
+public struct TemplateConfig: Sendable, Codable, Equatable {
+    /// Whether template rendering is enabled.
+    public var enabled: Bool
+    
+    /// Paths to search for template files.
+    public var paths: [String]
+    
+    /// Components to generate using templates.
+    public var components: Set<TemplateComponent>
+    
+    /// Custom variables to pass to templates.
+    public var customVariables: [String: String]
+    
+    /// Creates a new template configuration.
+    /// - Parameters:
+    ///   - enabled: Whether template rendering is enabled.
+    ///   - paths: Paths to search for template files.
+    ///   - components: Components to generate using templates.
+    ///   - customVariables: Custom variables to pass to templates.
+    public init(
+        enabled: Bool = false,
+        paths: [String] = [],
+        components: Set<TemplateComponent> = [],
+        customVariables: [String: String] = [:]
+    ) {
+        self.enabled = enabled
+        self.paths = paths
+        self.components = components
+        self.customVariables = customVariables
+    }
+}
+
 /// A structure that contains configuration options for a single execution
 /// of the generator pipeline run.
 ///
@@ -67,6 +114,9 @@ public struct Config: Sendable {
 
     /// Additional pre-release features to enable.
     public var featureFlags: FeatureFlags
+    
+    /// Template configuration for custom code generation.
+    public var templateConfig: TemplateConfig?
 
     /// Creates a configuration with the specified generator mode and imports.
     /// - Parameters:
@@ -81,6 +131,7 @@ public struct Config: Sendable {
     ///     of the naming strategy.
     ///   - typeOverrides: A map of OpenAPI schema names to desired custom type names.
     ///   - featureFlags: Additional pre-release features to enable.
+    ///   - templateConfig: Template configuration for custom code generation.
     public init(
         mode: GeneratorMode,
         access: AccessModifier,
@@ -90,7 +141,8 @@ public struct Config: Sendable {
         namingStrategy: NamingStrategy,
         nameOverrides: [String: String] = [:],
         typeOverrides: TypeOverrides = .init(),
-        featureFlags: FeatureFlags = []
+        featureFlags: FeatureFlags = [],
+        templateConfig: TemplateConfig? = nil
     ) {
         self.mode = mode
         self.access = access
@@ -101,5 +153,6 @@ public struct Config: Sendable {
         self.nameOverrides = nameOverrides
         self.typeOverrides = typeOverrides
         self.featureFlags = featureFlags
+        self.templateConfig = templateConfig
     }
 }

@@ -122,6 +122,13 @@ extension _GenerateOptions {
         if !featureFlag.isEmpty { return Set(featureFlag) }
         return config?.featureFlags ?? []
     }
+    
+    /// Returns the template configuration requested by the user.
+    /// - Parameter config: The configuration specified by the user.
+    /// - Returns: The template configuration requested by the user, or nil if none provided.
+    func resolvedTemplateConfig(_ config: _UserConfig?) -> TemplateConfig? {
+        return config?.templateConfig
+    }
 
     /// Validates a collection of keys against a predefined set of allowed keys.
     ///

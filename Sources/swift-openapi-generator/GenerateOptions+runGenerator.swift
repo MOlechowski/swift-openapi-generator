@@ -37,6 +37,7 @@ extension _GenerateOptions {
         let resolvedNameOverrides = resolvedNameOverrides(config)
         let resolvedTypeOverrides = resolvedTypeOverrides(config)
         let resolvedFeatureFlags = resolvedFeatureFlags(config)
+        let resolvedTemplateConfig = resolvedTemplateConfig(config)
         let configs: [Config] = sortedModes.map {
             .init(
                 mode: $0,
@@ -47,7 +48,8 @@ extension _GenerateOptions {
                 namingStrategy: resolvedNamingStragy,
                 nameOverrides: resolvedNameOverrides,
                 typeOverrides: resolvedTypeOverrides,
-                featureFlags: resolvedFeatureFlags
+                featureFlags: resolvedFeatureFlags,
+                templateConfig: resolvedTemplateConfig
             )
         }
         let (diagnostics, finalizeDiagnostics) = preparedDiagnosticsCollector(outputPath: diagnosticsOutputPath)
@@ -75,6 +77,9 @@ extension _GenerateOptions {
             - Is dry run: \(isDryRun)
             - Additional imports: \(resolvedAdditionalImports.isEmpty ? "<none>" : resolvedAdditionalImports.joined(separator: ", "))
             - Additional file comments: \(resolvedAdditionalFileComments.isEmpty ? "<none>" : resolvedAdditionalFileComments.joined(separator: ", "))
+            - Template enabled: \(resolvedTemplateConfig?.enabled ?? false)
+            - Template paths: \(resolvedTemplateConfig?.paths.isEmpty ?? true ? "<none>" : resolvedTemplateConfig!.paths.joined(separator: ", "))
+            - Template components: \(resolvedTemplateConfig?.components.isEmpty ?? true ? "<none>" : resolvedTemplateConfig!.components.map(\.rawValue).joined(separator: ", "))
             """
         )
         do {

@@ -51,6 +51,9 @@ let package = Package(
         // CLI Tool
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
 
+        // Template Engine
+        .package(url: "https://github.com/vapor/leaf.git", from: "4.4.0"),
+
         // Tests-only: Runtime library linked by generated code, and also
         // helps keep the runtime library new enough to work with the generated
         // code.
@@ -69,6 +72,7 @@ let package = Package(
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
                 .product(name: "Yams", package: "Yams"),
+                .product(name: "Leaf", package: "leaf"),
             ],
             swiftSettings: swiftSettings
         ),

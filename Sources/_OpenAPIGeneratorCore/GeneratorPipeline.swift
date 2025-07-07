@@ -98,11 +98,26 @@ public func runGenerator(input: InMemoryInputFile, config: Config, diagnostics: 
 func makeGeneratorPipeline(
     parser: any ParserProtocol = YamsParser(),
     validator: @escaping (ParsedOpenAPIRepresentation, Config) throws -> [Diagnostic] = validateDoc,
-    translator: any TranslatorProtocol = MultiplexTranslator(),
-    renderer: any RendererProtocol = TextBasedRenderer.default,
+    translator: (any TranslatorProtocol)? = nil,
+    renderer: (any RendererProtocol)? = nil,
     config: Config,
     diagnostics: any DiagnosticCollector
 ) -> GeneratorPipeline {
+    // Choose translator and renderer based on feature flags
+    let effectiveTranslator: any TranslatorProtocol
+    let effectiveRenderer: any RendererProtocol
+    
+    if config.featureFlags.contains(.templateBasedGeneration) {
+        // Use template-based generation
+        effectiveTranslator = translator ?? TemplateBasedTranslator()
+        // For template-based generation, we still use TextBasedRenderer
+        // because TemplateBasedTranslator produces a StructuredSwiftRepresentation
+        effectiveRenderer = renderer ?? TextBasedRenderer.default
+    } else {
+        // Use AST-based generation (default)
+        effectiveTranslator = translator ?? MultiplexTranslator()
+        effectiveRenderer = renderer ?? TextBasedRenderer.default
+    }
     let filterDoc = { (doc: OpenAPI.Document) -> OpenAPI.Document in
         guard let documentFilter = config.filter else { return doc }
         let filteredDoc: OpenAPI.Document = try documentFilter.filter(doc)
@@ -122,13 +137,13 @@ func makeGeneratorPipeline(
         translateOpenAPIToStructuredSwiftStage: .init(
             preTransitionHooks: [],
             transition: { input in
-                try translator.translate(parsedOpenAPI: input, config: config, diagnostics: diagnostics)
+                try effectiveTranslator.translate(parsedOpenAPI: input, config: config, diagnostics: diagnostics)
             },
             postTransitionHooks: []
         ),
         renderSwiftFilesStage: .init(
             preTransitionHooks: [],
-            transition: { input in try renderer.render(structured: input, config: config, diagnostics: diagnostics) },
+            transition: { input in try effectiveRenderer.render(structured: input, config: config, diagnostics: diagnostics) },
             postTransitionHooks: []
         )
     )
